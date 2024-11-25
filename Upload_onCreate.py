@@ -16,30 +16,25 @@ class FolderHandler(FileSystemEventHandler):
         folder_path = event.src_path
         folder_name = os.path.basename(folder_path)
         parent_folder = os.path.basename(os.path.dirname(folder_path))
-        
-        # Check if this is a "MMDD" folder (day folder) under a year folder
-        if len(folder_name) == 4 and folder_name.isdigit() and parent_folder.isdigit() and len(parent_folder) == 4:
-            print(f"New day folder detected: {folder_path}")
+
+        if len(folder_name) == 6 and folder_name.isdigit() and parent_folder.isdigit() and len(parent_folder) == 4:
+            print(f"New time for current day detected: {folder_path}")
 
             if self.waiting_for_next:
-                print(f"Subsequent day folder detected: {folder_path}")
+                print(f"Subsequent time for current day folder detected: {folder_path}")
                 self.waiting_for_next = False
                 self.upload_last_folder()
             
             self.last_folder = folder_path
             self.waiting_for_next = True
 
-        # Check if this is a "YYYY" folder (year folder)
-        elif len(folder_name) == 4 and folder_name.isdigit() and (folder_name.startswith("19") or folder_name.startswith("20")):
-            print(f"New year folder detected: {folder_path}")
-
     def upload_last_folder(self):
         if not self.last_folder:
             return
         
-        csv_files = [f for f in os.listdir(self.last_folder) if f.endswith('.csv')]
+        csv_files = [f for f in os.listdir(self.last_folder) if (f.endswith('.csv') and f.startswith('AXLTBL'))]
         if not csv_files:
-            print(f"No CSV files found in {self.last_folder}")
+            print(f"No AXLTBL CSV files found in {self.last_folder}")
             return
         
         for csv_file in csv_files:
