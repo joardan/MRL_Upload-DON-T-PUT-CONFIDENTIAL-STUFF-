@@ -11,7 +11,7 @@ class LogHandler(FileSystemEventHandler):
         if event.src_path.endswith("analysis.log"):
             with open(event.src_path, 'r') as f:
                 lines = f.readlines()
-                if lines and "*************************************************" in lines[-1]:
+                if lines and "*************************************************" in lines[-3]:
                     print("Detected line in analysis.log, initiating CSV upload")
                     self.csv_folder = os.path.dirname(event.src_path)
                     self.upload_csv_files()
