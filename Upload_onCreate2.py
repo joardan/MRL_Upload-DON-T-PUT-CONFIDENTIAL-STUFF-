@@ -9,6 +9,7 @@ class LogHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         if event.src_path.endswith("analysis.log"):
+            print("analysis.log was modified")
             with open(event.src_path, 'r') as f:
                 lines = f.readlines()
                 if lines and "*************************************************" in lines[-3]:
