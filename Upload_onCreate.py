@@ -33,10 +33,8 @@ class FolderHandler(FileSystemEventHandler):
             return
         
         csv_files = [f for f in os.listdir(self.last_folder) if (f.endswith('.csv') and f.startswith('AXLTBL'))]
-        all_files = [f for f in os.listdir(self.last_folder)]
         if not csv_files:
             print(f"No AXLTBL CSV files found in {self.last_folder}")
-            print(all_files)
             return
         
         for csv_file in csv_files:
