@@ -12,12 +12,12 @@ class LogHandler(FileSystemEventHandler):
             print("analysis.log was modified")
             with open(event.src_path, 'r') as f:
                 lines = f.readlines()
-                if len(lines) >= 3 and "*************************************************" in lines[-3]:
+                if len(lines) >= 2 and "*************************************************" in lines[-2]:
                     print("Detected line in analysis.log, initiating CSV upload")
                     self.csv_folder = os.path.dirname(event.src_path)
                     self.upload_csv_files()
-                elif len(lines) >= 3:
-                    print(lines[-3])
+                elif len(lines) >= 2:
+                    print(lines[-2])
 
     def upload_csv_files(self):
         csv_files = [f for f in os.listdir(self.csv_folder) if f.endswith('.csv') and f.startswith('AXLTBL')]
