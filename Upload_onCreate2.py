@@ -16,6 +16,8 @@ class LogHandler(FileSystemEventHandler):
                     print("Detected line in analysis.log, initiating CSV upload")
                     self.csv_folder = os.path.dirname(event.src_path)
                     self.upload_csv_files()
+                else:
+                    print(lines[-3])
 
     def upload_csv_files(self):
         csv_files = [f for f in os.listdir(self.csv_folder) if f.endswith('.csv') and f.startswith('AXLTBL')]
