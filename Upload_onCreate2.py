@@ -6,16 +6,25 @@ from watchdog.events import FileSystemEventHandler
 class LogHandler(FileSystemEventHandler):
     def __init__(self):
         super().__init__()
+        self.last_processed_folder = None
 
     def on_modified(self, event):
         if event.src_path.endswith("analysis.log"):
+            current_folder = os.path.dirname(event.src_path)
+
+            # If current folder is the same as last processed folder, skip processing
+            if current_folder == self.last_processed_folder:
+                print(f"Modification detected in {current_folder}, but it's already processed.")
+                return
+            
             print("analysis.log was modified")
             with open(event.src_path, 'r') as f:
                 lines = f.readlines()
                 if len(lines) >= 2 and "*************************************************" in lines[-2]:
                     print("Detected line in analysis.log, initiating CSV upload")
-                    self.csv_folder = os.path.dirname(event.src_path)
+                    self.csv_folder = current_folder
                     self.upload_csv_files()
+                    self.last_processed_folder = current_folder
                 elif len(lines) >= 2:
                     print(lines[-2])
 
