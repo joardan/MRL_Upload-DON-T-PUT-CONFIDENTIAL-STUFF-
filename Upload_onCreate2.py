@@ -34,7 +34,7 @@ class LogHandler(FileSystemEventHandler):
 if __name__ == "__main__":
     path = r"D:\Server\trains"
 
-    event_handler = LogHandler(path)
+    event_handler = LogHandler()
     observer = Observer()
     observer.schedule(event_handler, path, recursive=True)
     
