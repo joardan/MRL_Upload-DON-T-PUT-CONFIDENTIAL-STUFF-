@@ -9,7 +9,7 @@ class LogHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         if event.src_path.endswith("analysis.log"):
-            with open(self.log_file_path, 'r') as f:
+            with open(event.src_path, 'r') as f:
                 lines = f.readlines()
                 if lines and "*************************************************" in lines[-1]:
                     print("Detected line in analysis.log, initiating CSV upload")
