@@ -41,7 +41,7 @@ def upload_axltbl_csvs(local_path, bucket_name, region_name, args):
                     hour, _ = time_part.split('-')
 
                     # Construct S3 key in "year/month/day/hour/filename" format, ignoring minutes
-                    s3_key = f"wabtecdata/{year}/{month}/{day}/{hour}/{file}"
+                    s3_key = f"wabtec_data/{year}/{month}/{day}/{hour}/{file}"
 
                     print(f"Uploading {file_path} to s3://{bucket_name}/{s3_key}...")
                     s3_client.upload_file(file_path, bucket_name, s3_key)
