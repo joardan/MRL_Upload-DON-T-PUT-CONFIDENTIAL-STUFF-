@@ -9,6 +9,8 @@ from watchdog.events import FileSystemEventHandler
 S3_BUCKET_NAME = "wabtec-bucket"
 S3_REGION_NAME = "ap-southeast-2"
 LOCAL_STORAGE_PATH = r"D:\Server\trains"
+aws_access_key = 'your_access_key'
+aws_secret_key = 'your_secret_key'
 
 class LogHandler(FileSystemEventHandler):
     def __init__(self):
@@ -49,29 +51,30 @@ class LogHandler(FileSystemEventHandler):
             self.upload_file(file_path)
 
     def upload_file(self, file_path):
-        relative_path = os.path.relpath(file_path, LOCAL_STORAGE_PATH)
-        parts = relative_path.split(os.sep)
+        file_name = os.path.basename(file_path)
+        
+        name_parts = file_name.split('_')
+        
+        if len(name_parts) != 3:
+            print(f"Skipping invalid file name structure: {file_name}")
+            return
+        
+        try:
+            date_part = name_parts[1]
+            time_part = name_parts[2].replace('.csv', '')
 
-        if len(parts) >= 3:  # Ensure it has at least year/monthday/hourminute_seconds
-            year = parts[0]
-            monthday = parts[1]
-            hourminute_seconds = parts[2]
+            year, month, day = date_part.split('-')
+            hour, minute = time_part.split('-')
 
-            # Reformat month/day/hour structure
-            month = monthday[:2]
-            day = monthday[2:]
-
-            # Construct S3 key in "wabtecdata/year/month/day/hour/filename" format
-            s3_key = f"wabtecdata/{year}/{month}/{day}/{hourminute_seconds}/{os.path.basename(file_path)}"
+            # Construct S3 key in "wabtec_data/year/month/day/hour/filename" format, ignoring minutes
+            s3_key = f"wabtec_data/{year}/{month}/{day}/{hour}/{file_name}"
 
             print(f"Uploading {file_path} to s3://{S3_BUCKET_NAME}/{s3_key}...")
-            try:
-                self.s3_client.upload_file(file_path, S3_BUCKET_NAME, s3_key)
-                print(f"Successfully uploaded: {s3_key}")
-            except Exception as e:
-                print(f"Failed to upload {file_path}: {e}")
-        else:
-            print(f"Skipping invalid path structure: {relative_path}")
+            self.s3_client.upload_file(file_path, S3_BUCKET_NAME, s3_key)
+            print(f"Successfully uploaded: {s3_key}")
+
+        except Exception as e:
+            print(f"Failed to upload {file_path}: {e}")
 
 if __name__ == "__main__":
     # Check that the path exists

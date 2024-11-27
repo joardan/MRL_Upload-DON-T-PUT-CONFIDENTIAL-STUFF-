@@ -41,7 +41,7 @@ def upload_axltbl_csvs(local_path, bucket_name, region_name, args):
                     # Check if the year and month meet the criteria
                     if (year > 2024) or (year == 2024 and month >= 5):
                         # Construct S3 key in "year/month/day/hour/filename" format
-                        s3_key = f"wabtecdata/{year}/{month:02d}/{day:02d}/{hourminute_seconds}/{file}"
+                        s3_key = f"wabtec_data/{year}/{month:02d}/{day:02d}/{hourminute_seconds}/{file}"
                         
                         print(f"Uploading {file_path} to s3://{bucket_name}/{s3_key}...")
                         try:
