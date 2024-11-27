@@ -17,7 +17,6 @@ def upload_axltbl_csvs(local_path, bucket_name, region_name, args):
         's3',
         aws_access_key_id=args.aws_access_key,
         aws_secret_access_key=args.aws_secret_key,
-        aws_session_token=args.aws_session_token,
         region_name=region_name
     )
 
@@ -56,7 +55,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Upload new CSV files to S3.")
     parser.add_argument("aws_access_key", help="AWS access key ID")
     parser.add_argument("aws_secret_key", help="AWS secret access key")
-    parser.add_argument("aws_session_token", help="AWS session token")
 
     # Check that the path exists
     if not os.path.exists(LOCAL_STORAGE_PATH):
