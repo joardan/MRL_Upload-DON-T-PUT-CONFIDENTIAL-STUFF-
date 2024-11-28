@@ -8,8 +8,7 @@ S3_BUCKET_NAME = "wabtec-bucket"
 S3_REGION_NAME = "ap-southeast-2"
 LOCAL_STORAGE_PATH = r"D:\Server\trains"
 
-# Date from which uploading is allowed
-START_DATE = datetime(2024, 9, 20)
+UPLOAD_START_DATE = datetime(2024, 9, 21)
 
 def upload_axltbl_csvs(local_path, bucket_name, region_name, args):
     """
@@ -30,28 +29,29 @@ def upload_axltbl_csvs(local_path, bucket_name, region_name, args):
             if file.endswith(".csv") and file.startswith("AXLTBL"):
                 file_path = os.path.join(root, file)
                 
+                file_name = os.path.basename(file_path)
+                name_parts = file_name.split('_')
+                
+                if len(name_parts) != 3:
+                    print(f"Skipping invalid file name structure: {file_name}")
+                    continue
+                
                 try:
-                    file_name = os.path.basename(file_path)
-                    name_parts = file_name.split('_')
-                    
-                    if len(name_parts) != 3:
-                        print(f"Skipping invalid file name structure: {file_name}")
-                        continue
-
                     date_part = name_parts[1]
                     time_part = name_parts[2].replace('.csv', '')
 
                     year, month, day = map(int, date_part.split('-'))
                     hour, _ = map(int, time_part.split('-'))
 
-                    file_datetime = datetime(year, month, day, hour)
+                    file_date = datetime(year, month, day, hour)
 
-                    if file_datetime < START_DATE:
-                        print(f"Skipping file before start date: {file_name}")
+                    # Skip files before the specified date
+                    if file_date < UPLOAD_START_DATE:
+                        print(f"Skipping file before start date: {file_path}")
                         continue
 
                     # Construct S3 key in "year/month/day/hour/filename" format, ignoring minutes
-                    s3_key = f"wabtec_data/{year}/{month}/{day}/{hour}/{file}"
+                    s3_key = f"wabtec_data/{year}/{month:02d}/{day:02d}/{hour:02d}/{file}"
 
                     print(f"Uploading {file_path} to s3://{bucket_name}/{s3_key}...")
                     s3_client.upload_file(file_path, bucket_name, s3_key)
